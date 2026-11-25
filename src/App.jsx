@@ -53,10 +53,35 @@ function GraphCanvas({ nodes, edges, selectedId, onSelect }) {
   )
 }
 
+function LoginGate({ password, onPasswordChange, onSubmit, loading, error }) {
+  return (
+    <div className="login-wrap">
+      <section className="login-card card">
+        <h2>Sign in</h2>
+        <p className="chat-caption">Enter workspace password to access product research data.</p>
+        {error ? <div className="error">{error}</div> : null}
+        <form onSubmit={onSubmit} className="chat-form">
+          <input
+            type="password"
+            placeholder="Workspace password"
+            value={password}
+            onChange={(e) => onPasswordChange(e.target.value)}
+          />
+          <button type="submit" disabled={loading}>
+            {loading ? 'Signing in...' : 'Sign in'}
+          </button>
+        </form>
+      </section>
+    </div>
+  )
+}
+
 export default function App() {
   const [graph, setGraph] = useState({ nodes: [], edges: [] })
   const [ideas, setIdeas] = useState([])
   const [selectedIdea, setSelectedIdea] = useState(null)
+  const [password, setPassword] = useState('')
+  const [isAuthed, setIsAuthed] = useState(Boolean(api.getToken()))
   const [chatInput, setChatInput] = useState('')
   const [chatHistory, setChatHistory] = useState([])
   const [marketResults, setMarketResults] = useState([])
@@ -68,6 +93,11 @@ export default function App() {
     let active = true
 
     async function load() {
+      if (!isAuthed) {
+        setLoading(false)
+        return
+      }
+
       try {
         setLoading(true)
         setError('')
@@ -105,6 +135,12 @@ export default function App() {
         ])
       } catch (err) {
         if (!active) return
+        if (String(err.message).startsWith('401:')) {
+          api.logout()
+          setIsAuthed(false)
+          setError('Session expired. Sign in again.')
+          return
+        }
         setError(err.message)
       } finally {
         if (active) setLoading(false)
@@ -115,7 +151,24 @@ export default function App() {
     return () => {
       active = false
     }
-  }, [])
+  }, [isAuthed])
+
+  async function handleLogin(event) {
+    event.preventDefault()
+    if (!password.trim()) return
+
+    try {
+      setLoading(true)
+      setError('')
+      await api.login(password.trim())
+      setPassword('')
+      setIsAuthed(true)
+    } catch (err) {
+      setError('Invalid password')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   async function selectIdea(ideaId) {
     try {
@@ -123,6 +176,12 @@ export default function App() {
       const detail = await api.getIdeaById(ideaId)
       setSelectedIdea(detail)
     } catch (err) {
+      if (String(err.message).startsWith('401:')) {
+        api.logout()
+        setIsAuthed(false)
+        setError('Session expired. Sign in again.')
+        return
+      }
       setError(err.message)
     }
   }
@@ -152,10 +211,38 @@ export default function App() {
         }
       ])
     } catch (err) {
+      if (String(err.message).startsWith('401:')) {
+        api.logout()
+        setIsAuthed(false)
+        setError('Session expired. Sign in again.')
+        return
+      }
       setError(err.message)
     } finally {
       setChatLoading(false)
     }
+  }
+
+  function logout() {
+    api.logout()
+    setIsAuthed(false)
+    setGraph({ nodes: [], edges: [] })
+    setIdeas([])
+    setSelectedIdea(null)
+    setChatHistory([])
+    setMarketResults([])
+  }
+
+  if (!isAuthed) {
+    return (
+      <LoginGate
+        password={password}
+        onPasswordChange={setPassword}
+        onSubmit={handleLogin}
+        loading={loading}
+        error={error}
+      />
+    )
   }
 
   return (
@@ -171,7 +258,12 @@ export default function App() {
           <section className="graph-panel card">
             <div className="panel-head">
               <h2>Potential Products</h2>
-              <span className="pill">{ideas.length} ideas</span>
+              <div className="panel-actions">
+                <span className="pill">{ideas.length} ideas</span>
+                <button className="ghost-button" onClick={logout} type="button">
+                  Log out
+                </button>
+              </div>
             </div>
 
             {loading ? (

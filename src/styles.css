@@ -28,6 +28,21 @@ body {
   padding: 28px 24px;
 }
 
+.login-wrap {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+}
+
+.login-card {
+  width: min(520px, 100%);
+}
+
+.login-card .error {
+  margin-top: 12px;
+}
+
 .topbar h1 {
   margin: 0;
   font-size: clamp(2rem, 4vw, 3rem);
@@ -77,6 +92,12 @@ body {
   gap: 10px;
 }
 
+.panel-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .pill {
   display: inline-flex;
   align-items: center;
@@ -93,6 +114,15 @@ body {
   border-color: transparent;
   background: var(--accent);
   font-weight: 600;
+}
+
+.ghost-button {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--muted);
+  border-radius: 8px;
+  padding: 5px 9px;
+  cursor: pointer;
 }
 
 .graph-content {

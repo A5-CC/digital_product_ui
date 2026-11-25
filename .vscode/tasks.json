@@ -125,6 +125,11 @@
 			"label": "build-ui-after-https-api",
 			"type": "shell",
 			"command": "npm run build"
+		},
+		{
+			"label": "build-ui-auth-gate",
+			"type": "shell",
+			"command": "npm run build"
 		}
 	]
 }
