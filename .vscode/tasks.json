@@ -5,6 +5,16 @@
 			"label": "scan-ui-repo",
 			"type": "shell",
 			"command": "find . -maxdepth 4 -mindepth 1 | sort"
+		},
+		{
+			"label": "install-and-build-ui",
+			"type": "shell",
+			"command": "npm install && npm run build"
+		},
+		{
+			"label": "ui-build-status",
+			"type": "shell",
+			"command": "npm install --no-audit --no-fund && npm run build && echo 'BUILD_OK'"
 		}
 	]
 }
