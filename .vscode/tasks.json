@@ -115,6 +115,11 @@
 			"label": "build-ui-remas-like-theme",
 			"type": "shell",
 			"command": "npm run build"
+		},
+		{
+			"label": "build-ui-api-fix",
+			"type": "shell",
+			"command": "npm run build"
 		}
 	]
 }
