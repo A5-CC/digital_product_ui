@@ -15,6 +15,31 @@
 			"label": "ui-build-status",
 			"type": "shell",
 			"command": "npm install --no-audit --no-fund && npm run build && echo 'BUILD_OK'"
+		},
+		{
+			"label": "inspect-pages-html",
+			"type": "shell",
+			"command": "curl -sSL https://a5-cc.github.io/digital_product_ui/ | sed -n '1,80p'"
+		},
+		{
+			"label": "check-ui-git-state",
+			"type": "shell",
+			"command": "git status --short && git log --oneline -n 3"
+		},
+		{
+			"label": "check-actions-runs",
+			"type": "shell",
+			"command": "curl -sS https://api.github.com/repos/A5-CC/digital_product_ui/actions/runs?per_page=5 | python3 -c 'import sys, json; d=json.load(sys.stdin); print(\"total\", d.get(\"total_count\"));\nfor r in d.get(\"workflow_runs\", [])[:5]: print(r.get(\"name\"), r.get(\"status\"), r.get(\"conclusion\"), r.get(\"html_url\"))'"
+		},
+		{
+			"label": "check-actions-runs-2",
+			"type": "shell",
+			"command": "python3 - <<'PY'\nimport json, urllib.request\nurl='https://api.github.com/repos/A5-CC/digital_product_ui/actions/runs?per_page=5'\nwith urllib.request.urlopen(url) as r:\n    d=json.load(r)\nprint('total', d.get('total_count'))\nfor run in d.get('workflow_runs', [])[:5]:\n    print(run.get('name'), run.get('status'), run.get('conclusion'), run.get('html_url'))\nPY"
+		},
+		{
+			"label": "check-workflow-tracked",
+			"type": "shell",
+			"command": "git ls-files .github/workflows && echo '---' && sed -n '1,140p' .github/workflows/deploy-pages.yml"
 		}
 	]
 }
