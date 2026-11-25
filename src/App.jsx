@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { api, API_BASE_URL } from './api'
+import { api } from './api'
 
 function GraphCanvas({ nodes, edges, selectedId, onSelect }) {
   const { positionedNodes, edgeLines } = useMemo(() => {
@@ -57,10 +57,11 @@ export default function App() {
   const [graph, setGraph] = useState({ nodes: [], edges: [] })
   const [ideas, setIdeas] = useState([])
   const [selectedIdea, setSelectedIdea] = useState(null)
-  const [searchTerm, setSearchTerm] = useState('')
-  const [marketQuery, setMarketQuery] = useState('')
+  const [chatInput, setChatInput] = useState('')
+  const [chatHistory, setChatHistory] = useState([])
   const [marketResults, setMarketResults] = useState([])
   const [loading, setLoading] = useState(true)
+  const [chatLoading, setChatLoading] = useState(false)
   const [error, setError] = useState('')
 
   useEffect(() => {
@@ -82,6 +83,26 @@ export default function App() {
           if (!active) return
           setSelectedIdea(detail)
         }
+
+        const broadQuery = 'top-selling digital product opportunities with market gaps'
+        const broadSearch = await api.searchMarket(broadQuery, 8)
+        if (!active) return
+
+        const initialIdeas = broadSearch.ideas || []
+        setMarketResults(initialIdeas)
+        setChatHistory([
+          {
+            role: 'assistant',
+            text: 'Initial broad search loaded. Ask for a niche and I will refine opportunities over time.'
+          },
+          {
+            role: 'assistant',
+            text:
+              initialIdeas.length > 0
+                ? `Top themes found: ${initialIdeas.map((idea) => idea.title).join(', ')}`
+                : 'No broad opportunities found yet. Try a niche prompt.'
+          }
+        ])
       } catch (err) {
         if (!active) return
         setError(err.message)
@@ -108,118 +129,137 @@ export default function App() {
 
   async function runMarketSearch(event) {
     event.preventDefault()
-    if (!marketQuery.trim()) return
+    const query = chatInput.trim()
+    if (!query) return
+
+    setChatHistory((prev) => [...prev, { role: 'user', text: query }])
+    setChatInput('')
 
     try {
+      setChatLoading(true)
       setError('')
-      const result = await api.searchMarket(marketQuery.trim(), 10)
-      setMarketResults(result.ideas || [])
+      const result = await api.searchMarket(query, 10)
+      const refinedIdeas = result.ideas || []
+      setMarketResults(refinedIdeas)
+      setChatHistory((prev) => [
+        ...prev,
+        {
+          role: 'assistant',
+          text:
+            refinedIdeas.length > 0
+              ? `Refined results: ${refinedIdeas.map((idea) => idea.title).join(', ')}`
+              : 'No matching ideas for that niche yet. Try another prompt.'
+        }
+      ])
     } catch (err) {
       setError(err.message)
+    } finally {
+      setChatLoading(false)
     }
   }
-
-  const filteredIdeas = useMemo(() => {
-    const q = searchTerm.toLowerCase().trim()
-    if (!q) return ideas
-    return ideas.filter((idea) => `${idea.title} ${idea.category} ${idea.problem}`.toLowerCase().includes(q))
-  }, [ideas, searchTerm])
 
   return (
     <div className="page">
       <header className="topbar">
         <h1>Digital Product Miner Dashboard</h1>
-        <p>API: {API_BASE_URL}</p>
       </header>
 
       {error ? <div className="error">{error}</div> : null}
 
-      <main className="layout">
-        <section className="graph-panel card">
-          <div className="panel-head">
-            <h2>Most Promising Product Ideas</h2>
-            <input
-              placeholder="Filter ideas..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
+      <main className="dashboard-grid">
+        <div className="left-column">
+          <section className="graph-panel card">
+            <div className="panel-head">
+              <h2>Potential Products</h2>
+            </div>
+
+            {loading ? (
+              <div className="loading">Loading dashboard...</div>
+            ) : (
+              <div className="graph-content">
+                <GraphCanvas
+                  nodes={graph.nodes}
+                  edges={graph.edges}
+                  selectedId={selectedIdea?.id}
+                  onSelect={selectIdea}
+                />
+                <div className="idea-list">
+                  {ideas.map((idea) => (
+                    <button
+                      key={idea.id}
+                      className={selectedIdea?.id === idea.id ? 'idea-item active' : 'idea-item'}
+                      onClick={() => selectIdea(idea.id)}
+                    >
+                      <strong>{idea.title}</strong>
+                      <span>{idea.category}</span>
+                      <span>Opportunity: {idea.opportunity_score}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </section>
+
+          <section className="metrics-panel card">
+            <p className="panel-kicker">Idea Metrics (Lower Panel)</p>
+            <h2>Product Metrics</h2>
+            {!selectedIdea ? (
+              <div className="empty">Select an idea to view platform sales metrics.</div>
+            ) : (
+              <>
+                <div className="idea-meta">
+                  <h3>{selectedIdea.title}</h3>
+                  <p>{selectedIdea.problem}</p>
+                  <p>
+                    <strong>Gap:</strong> {selectedIdea.gap}
+                  </p>
+                </div>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Platform</th>
+                      <th>Listings</th>
+                      <th>Sales / Week</th>
+                      <th>Avg Price (USD)</th>
+                      <th>Est. Monthly Revenue (USD)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {selectedIdea.platforms.map((platform) => (
+                      <tr key={platform.name}>
+                        <td>{platform.name}</td>
+                        <td>{platform.listing_count}</td>
+                        <td>{platform.sales_frequency_per_week}</td>
+                        <td>{platform.avg_price_usd}</td>
+                        <td>{platform.est_monthly_revenue_usd}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </>
+            )}
+          </section>
+        </div>
+
+        <section className="chat-panel card">
+          <h2>Niche Research Chat</h2>
+          <div className="chat-history">
+            {chatHistory.map((msg, idx) => (
+              <div key={`${msg.role}-${idx}`} className={msg.role === 'user' ? 'chat-bubble user' : 'chat-bubble assistant'}>
+                {msg.text}
+              </div>
+            ))}
           </div>
 
-          {loading ? (
-            <div className="loading">Loading dashboard...</div>
-          ) : (
-            <div className="graph-content">
-              <GraphCanvas
-                nodes={graph.nodes.filter((n) => filteredIdeas.some((f) => f.id === n.id))}
-                edges={graph.edges}
-                selectedId={selectedIdea?.id}
-                onSelect={selectIdea}
-              />
-              <div className="idea-list">
-                {filteredIdeas.map((idea) => (
-                  <button
-                    key={idea.id}
-                    className={selectedIdea?.id === idea.id ? 'idea-item active' : 'idea-item'}
-                    onClick={() => selectIdea(idea.id)}
-                  >
-                    <strong>{idea.title}</strong>
-                    <span>{idea.category}</span>
-                    <span>Opportunity: {idea.opportunity_score}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-        </section>
-
-        <section className="metrics-panel card">
-          <h2>Idea Metrics (Lower Panel)</h2>
-          {!selectedIdea ? (
-            <div className="empty">Select an idea to view platform sales metrics.</div>
-          ) : (
-            <>
-              <div className="idea-meta">
-                <h3>{selectedIdea.title}</h3>
-                <p>{selectedIdea.problem}</p>
-                <p>
-                  <strong>Gap:</strong> {selectedIdea.gap}
-                </p>
-              </div>
-              <table>
-                <thead>
-                  <tr>
-                    <th>Platform</th>
-                    <th>Listings</th>
-                    <th>Sales / Week</th>
-                    <th>Avg Price (USD)</th>
-                    <th>Est. Monthly Revenue (USD)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {selectedIdea.platforms.map((platform) => (
-                    <tr key={platform.name}>
-                      <td>{platform.name}</td>
-                      <td>{platform.listing_count}</td>
-                      <td>{platform.sales_frequency_per_week}</td>
-                      <td>{platform.avg_price_usd}</td>
-                      <td>{platform.est_monthly_revenue_usd}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </>
-          )}
-        </section>
-
-        <section className="market-panel card">
-          <h2>RAG / Research Search</h2>
-          <form onSubmit={runMarketSearch} className="market-form">
+          <form onSubmit={runMarketSearch} className="chat-form">
             <input
-              placeholder="Find products with market gaps..."
-              value={marketQuery}
-              onChange={(e) => setMarketQuery(e.target.value)}
+              placeholder="Ask for a product niche..."
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
             />
-            <button type="submit">Run Search</button>
+            <button type="submit" disabled={chatLoading}>
+              {chatLoading ? 'Thinking...' : 'Send'}
+            </button>
           </form>
 
           <div className="market-results">

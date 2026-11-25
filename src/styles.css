@@ -46,11 +46,17 @@ body {
   border-radius: 10px;
 }
 
-.layout {
+.dashboard-grid {
   margin-top: 16px;
   display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(320px, 1fr);
   gap: 16px;
-  grid-template-rows: auto auto auto;
+  align-items: start;
+}
+
+.left-column {
+  display: grid;
+  gap: 16px;
 }
 
 .card {
@@ -63,20 +69,9 @@ body {
 
 .panel-head {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-start;
   align-items: center;
   gap: 10px;
-}
-
-.panel-head input,
-.market-form input {
-  width: 320px;
-  max-width: 100%;
-  background: #0d1430;
-  border: 1px solid #32407a;
-  color: var(--text);
-  border-radius: 8px;
-  padding: 9px 10px;
 }
 
 .graph-content {
@@ -170,25 +165,76 @@ body {
   color: var(--muted);
 }
 
-.market-form {
+.panel-kicker {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.chat-panel {
+  position: sticky;
+  top: 12px;
+}
+
+.chat-history {
+  margin-top: 10px;
+  height: 260px;
+  overflow-y: auto;
+  display: grid;
+  gap: 8px;
+  padding-right: 4px;
+}
+
+.chat-bubble {
+  border: 1px solid #32407a;
+  border-radius: 10px;
+  padding: 9px 10px;
+  font-size: 14px;
+}
+
+.chat-bubble.assistant {
+  background: #0d1430;
+}
+
+.chat-bubble.user {
+  background: rgba(127, 140, 255, 0.2);
+  border-color: rgba(127, 140, 255, 0.5);
+}
+
+.chat-form {
+  margin-top: 12px;
   display: flex;
   gap: 10px;
 }
 
-.market-form button {
+.chat-form input {
+  width: 100%;
+  background: #0d1430;
+  border: 1px solid #32407a;
+  color: var(--text);
+  border-radius: 8px;
+  padding: 9px 10px;
+}
+
+.chat-form button {
   border: 0;
   border-radius: 8px;
   background: var(--accent);
   color: white;
   padding: 10px 12px;
   cursor: pointer;
+  white-space: nowrap;
 }
 
 .market-results {
   margin-top: 12px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 10px;
+  max-height: 320px;
+  overflow-y: auto;
 }
 
 .market-card {
@@ -206,6 +252,14 @@ body {
 }
 
 @media (max-width: 980px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .chat-panel {
+    position: static;
+  }
+
   .graph-content {
     grid-template-columns: 1fr;
   }

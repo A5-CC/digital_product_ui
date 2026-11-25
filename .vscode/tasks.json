@@ -40,6 +40,11 @@
 			"label": "check-workflow-tracked",
 			"type": "shell",
 			"command": "git ls-files .github/workflows && echo '---' && sed -n '1,140p' .github/workflows/deploy-pages.yml"
+		},
+		{
+			"label": "build-ui-after-layout-update",
+			"type": "shell",
+			"command": "npm run build"
 		}
 	]
 }
