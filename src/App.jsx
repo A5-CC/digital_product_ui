@@ -161,10 +161,7 @@ export default function App() {
   return (
     <div className="page">
       <header className="topbar">
-        <div>
-          <h1>Digital Product Miner Dashboard</h1>
-          <p className="subtitle">Opportunity discovery workspace for digital product niches</p>
-        </div>
+        <div />
       </header>
 
       {error ? <div className="error">{error}</div> : null}
