@@ -50,6 +50,71 @@
 			"label": "build-ui-styling-refresh",
 			"type": "shell",
 			"command": "npm run build"
+		},
+		{
+			"label": "find-remas-repo",
+			"type": "shell",
+			"command": "find /Users/a000/Documents/GitHub -maxdepth 2 -type d | grep -i remas | head -n 20"
+		},
+		{
+			"label": "scan-remas-frontend",
+			"type": "shell",
+			"command": "find /Users/a000/Documents/GitHub/REMAS -maxdepth 4 -type f \\( -name '*.css' -o -name '*.scss' -o -name '*.tsx' -o -name '*.jsx' -o -name 'tailwind.config.*' -o -name 'package.json' \\) | head -n 120"
+		},
+		{
+			"label": "list-remas-root",
+			"type": "shell",
+			"command": "ls -la /Users/a000/Documents/GitHub/REMAS"
+		},
+		{
+			"label": "list-remas-localdev-root",
+			"type": "shell",
+			"command": "ls -la /Users/a000/Documents/GitHub/REMAS_local_dev | head -n 120"
+		},
+		{
+			"label": "find-remas-ui-name",
+			"type": "shell",
+			"command": "find /Users/a000/Documents -maxdepth 4 -type d | grep -Ei 'remas.*ui|ui.*remas' | head -n 50"
+		},
+		{
+			"label": "scan-remas-ui-files",
+			"type": "shell",
+			"command": "find /Users/a000/Documents/GitHub/remas_ui -maxdepth 3 -type f | grep -E '\\.(css|scss|tsx|jsx|ts|js|json)$' | head -n 200"
+		},
+		{
+			"label": "read-remas-ui-html",
+			"type": "shell",
+			"command": "sed -n '1,260p' /Users/a000/Documents/GitHub/remas_ui/local.html"
+		},
+		{
+			"label": "read-remas-local-css",
+			"type": "shell",
+			"command": "sed -n '1,320p' /Users/a000/Documents/GitHub/remas_ui/local.css"
+		},
+		{
+			"label": "read-remas-local-css-start",
+			"type": "shell",
+			"command": "python3 - <<'PY'\nfrom pathlib import Path\np=Path('/Users/a000/Documents/GitHub/remas_ui/local.css')\ntext=p.read_text()\nprint(text[:2200])\nPY"
+		},
+		{
+			"label": "extract-remas-css-palette",
+			"type": "shell",
+			"command": "python3 - <<'PY'\nimport re\nfrom pathlib import Path\ntext=Path('/Users/a000/Documents/GitHub/remas_ui/local.css').read_text()\ncolors=sorted(set(re.findall(r'#[0-9a-fA-F]{3,8}',text)))\nprint('\\n'.join(colors))\nPY"
+		},
+		{
+			"label": "remas-css-head-repr",
+			"type": "shell",
+			"command": "python3 - <<'PY'\nfrom pathlib import Path\ntext=Path('/Users/a000/Documents/GitHub/remas_ui/local.css').read_text()\nprint(repr(text[:700]))\nPY"
+		},
+		{
+			"label": "remas-css-selectors",
+			"type": "shell",
+			"command": "python3 - <<'PY'\nimport re\nfrom pathlib import Path\ntext=Path('/Users/a000/Documents/GitHub/remas_ui/local.css').read_text()\nselectors=re.findall(r'([^{}]+)\\{[^{}]*\\}', text)\nfor s in selectors[:80]:\n    print(s.strip())\nPY"
+		},
+		{
+			"label": "build-ui-remas-like-theme",
+			"type": "shell",
+			"command": "npm run build"
 		}
 	]
 }

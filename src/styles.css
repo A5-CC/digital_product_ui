@@ -1,14 +1,13 @@
 :root {
   color-scheme: dark;
-  --bg: #0a0f1f;
-  --bg-2: #0f1730;
-  --panel: #111a33;
-  --panel2: #172243;
-  --accent: #8ea2ff;
-  --accent2: #58d6b3;
-  --text: #eef2ff;
-  --muted: #9aa7cf;
-  --line: #2a3a70;
+  --bg: #0a1018;
+  --panel: #0f1822;
+  --panel2: #101b26;
+  --accent: #81d6ba;
+  --accent2: #9eebd4;
+  --text: #e8f1f5;
+  --muted: #90a9b1;
+  --line: #314653;
   --error: #ff808f;
 }
 
@@ -18,30 +17,27 @@
 
 body {
   margin: 0;
-  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-  background:
-    radial-gradient(1200px 500px at 10% -10%, #1a2855 0%, transparent 60%),
-    radial-gradient(900px 400px at 90% -20%, #15244b 0%, transparent 55%),
-    linear-gradient(180deg, var(--bg-2) 0%, var(--bg) 65%);
+  font: 15px/1.5 system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  background: radial-gradient(ellipse at 15% 0%, #193139 0, transparent 42%), var(--bg);
   color: var(--text);
 }
 
 .page {
-  max-width: 1280px;
+  max-width: 1300px;
   margin: 0 auto;
-  padding: 20px;
+  padding: 28px 24px;
 }
 
 .topbar h1 {
   margin: 0;
-  font-size: 30px;
+  font-size: clamp(2rem, 4vw, 3rem);
   letter-spacing: -0.02em;
 }
 
 .subtitle {
   margin: 6px 0 0;
   color: var(--muted);
-  font-size: 14px;
+  font-size: 0.92rem;
 }
 
 .error {
@@ -67,12 +63,11 @@ body {
 }
 
 .card {
-  background: linear-gradient(180deg, rgba(23, 34, 67, 0.95), rgba(17, 26, 51, 0.95));
+  background: linear-gradient(180deg, var(--panel), var(--panel2));
   border: 1px solid var(--line);
-  border-radius: 16px;
+  border-radius: 10px;
   padding: 16px;
-  box-shadow: 0 8px 26px rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(4px);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.26);
 }
 
 .panel-head {
@@ -86,17 +81,17 @@ body {
   display: inline-flex;
   align-items: center;
   padding: 4px 10px;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  color: var(--muted);
+  border-radius: 20px;
+  border: 1px solid #2c6556;
+  color: var(--accent2);
   font-size: 12px;
-  background: rgba(13, 20, 48, 0.65);
+  background: #173c36;
 }
 
 .pill-accent {
-  color: #061629;
+  color: #09221c;
   border-color: transparent;
-  background: var(--accent2);
+  background: var(--accent);
   font-weight: 600;
 }
 
@@ -113,12 +108,12 @@ body {
 }
 
 .graph-bg {
-  fill: #0d1430;
+  fill: #0b141e;
   stroke: var(--line);
 }
 
 .edge {
-  stroke: #4459a8;
+  stroke: #3c5360;
   stroke-width: 1.5;
   opacity: 0.75;
 }
@@ -129,7 +124,7 @@ body {
 
 .node {
   fill: var(--accent);
-  stroke: #dbe0ff;
+  stroke: #d7e9ed;
   stroke-width: 1;
 }
 
@@ -138,7 +133,7 @@ body {
 }
 
 .node-score {
-  fill: #081126;
+  fill: #09221c;
   font-weight: 700;
   font-size: 11px;
 }
@@ -153,7 +148,7 @@ body {
 .idea-item {
   text-align: left;
   border: 1px solid var(--line);
-  background: #0d1430;
+  background: #0b141e;
   color: var(--text);
   border-radius: 12px;
   padding: 11px;
@@ -165,12 +160,12 @@ body {
 
 .idea-item:hover {
   transform: translateY(-1px);
-  border-color: #4f66bc;
+  border-color: #3c5360;
 }
 
 .idea-item.active {
-  border-color: var(--accent2);
-  box-shadow: 0 0 0 1px var(--accent2) inset;
+  border-color: #2c6556;
+  box-shadow: 0 0 0 1px #2c6556 inset;
 }
 
 .idea-item span {
@@ -233,12 +228,12 @@ body {
 }
 
 .chat-bubble.assistant {
-  background: #0d1430;
+  background: #0b141e;
 }
 
 .chat-bubble.user {
-  background: rgba(127, 140, 255, 0.2);
-  border-color: rgba(127, 140, 255, 0.5);
+  background: #173c36;
+  border-color: #2c6556;
 }
 
 .chat-form {
@@ -249,7 +244,7 @@ body {
 
 .chat-form input {
   width: 100%;
-  background: #0d1430;
+  background: #0b141e;
   border: 1px solid var(--line);
   color: var(--text);
   border-radius: 10px;
@@ -260,7 +255,7 @@ body {
   border: 0;
   border-radius: 10px;
   background: var(--accent);
-  color: #0d1430;
+  color: #09221c;
   font-weight: 600;
   padding: 10px 12px;
   cursor: pointer;
@@ -280,7 +275,7 @@ body {
   border: 1px solid var(--line);
   border-radius: 12px;
   padding: 10px;
-  background: #0d1430;
+  background: #0b141e;
 }
 
 .market-card p,
