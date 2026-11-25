@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://3.135.194.92:8000'
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://sutdy7lh5e.execute-api.us-east-2.amazonaws.com'
 
 async function request(path, options = {}) {
   const res = await fetch(`${API_BASE_URL}${path}`, {

@@ -120,6 +120,11 @@
 			"label": "build-ui-api-fix",
 			"type": "shell",
 			"command": "npm run build"
+		},
+		{
+			"label": "build-ui-after-https-api",
+			"type": "shell",
+			"command": "npm run build"
 		}
 	]
 }
