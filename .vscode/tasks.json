@@ -1,0 +1,10 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "scan-ui-repo",
+			"type": "shell",
+			"command": "find . -maxdepth 4 -mindepth 1 | sort"
+		}
+	]
+}
