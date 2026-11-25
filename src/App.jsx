@@ -161,7 +161,10 @@ export default function App() {
   return (
     <div className="page">
       <header className="topbar">
-        <h1>Digital Product Miner Dashboard</h1>
+        <div>
+          <h1>Digital Product Miner Dashboard</h1>
+          <p className="subtitle">Opportunity discovery workspace for digital product niches</p>
+        </div>
       </header>
 
       {error ? <div className="error">{error}</div> : null}
@@ -171,6 +174,7 @@ export default function App() {
           <section className="graph-panel card">
             <div className="panel-head">
               <h2>Potential Products</h2>
+              <span className="pill">{ideas.length} ideas</span>
             </div>
 
             {loading ? (
@@ -242,7 +246,11 @@ export default function App() {
         </div>
 
         <section className="chat-panel card">
-          <h2>Niche Research Chat</h2>
+          <div className="panel-head">
+            <h2>Niche Research Chat</h2>
+            <span className="pill pill-accent">Live</span>
+          </div>
+          <p className="chat-caption">Refine niches over time. Broad market results are listed below.</p>
           <div className="chat-history">
             {chatHistory.map((msg, idx) => (
               <div key={`${msg.role}-${idx}`} className={msg.role === 'user' ? 'chat-bubble user' : 'chat-bubble assistant'}>

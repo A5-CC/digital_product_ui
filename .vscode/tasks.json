@@ -45,6 +45,11 @@
 			"label": "build-ui-after-layout-update",
 			"type": "shell",
 			"command": "npm run build"
+		},
+		{
+			"label": "build-ui-styling-refresh",
+			"type": "shell",
+			"command": "npm run build"
 		}
 	]
 }
